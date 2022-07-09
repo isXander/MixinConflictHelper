@@ -12,7 +12,6 @@ import org.spongepowered.asm.mixin.injection.struct.InjectionInfo;
 import org.spongepowered.asm.mixin.injection.throwables.InvalidInjectionException;
 import org.spongepowered.asm.mixin.transformer.ClassInfo;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -29,12 +28,7 @@ public class MixinConflictHelper implements PreLaunchEntrypoint {
         Mixins.registerErrorHandlerClass("dev.isxander.mixinconflicthelper.ConflictErrorHandler");
     }
 
-    public static void processStacktrace(String stacktrace) {
-        System.out.println("received stacktrace");
-        System.out.println(stacktrace);
-    }
-
-    public static ModContainer getModForMixinConfig(IMixinConfig mixinConfig) {
+    public static Optional<ModContainer> getModForMixinConfig(IMixinConfig mixinConfig) {
         if (modMixinConfigs == null) {
             modMixinConfigs = new HashMap<>();
             for (var mod : FabricLoader.getInstance().getAllMods()) {
@@ -49,35 +43,39 @@ public class MixinConflictHelper implements PreLaunchEntrypoint {
         }
 
         var configFileName = mixinConfig.getName();
-        return modMixinConfigs.get(configFileName);
+        return Optional.ofNullable(modMixinConfigs.get(configFileName));
     }
 
-    public static Optional<ModContainer> walkExceptionCauseForMerger(Throwable th) throws InvocationTargetException, IllegalAccessException, NoSuchFieldException {
-        Throwable throwable = th;
-        while (throwable != null) {
-            if (throwable instanceof InvalidInjectionException injectionException) {
-                if (injectionException.getContext() instanceof InjectionInfo injectionInfo) {
-                    var classInfo = ClassInfo.fromCache(injectionInfo.getMixin().getTargetClassRef());
-                    var mixinsField = ClassInfo.class.getDeclaredField("mixins");
-                    mixinsField.setAccessible(true);
-                    Set<IMixinInfo> mixins = (Set<IMixinInfo>) mixinsField.get(classInfo);
+    public static Optional<ModContainer> walkExceptionCauseForMerger(Throwable th) {
+        try {
+            Throwable throwable = th;
+            while (throwable != null) {
+                if (throwable instanceof InvalidInjectionException injectionException) {
+                    if (injectionException.getContext() instanceof InjectionInfo injectionInfo) {
+                        var classInfo = ClassInfo.fromCache(injectionInfo.getMixin().getTargetClassRef());
+                        var mixinsField = ClassInfo.class.getDeclaredField("mixins");
+                        mixinsField.setAccessible(true);
+                        Set<IMixinInfo> mixins = (Set<IMixinInfo>) mixinsField.get(classInfo);
 
-                    var matcher = MERGED_BY_REGEX.matcher(injectionException.getMessage());
-                    var found = matcher.find();
-                    if (found) {
-                        var mergerMixinClass = matcher.group(1);
+                        var matcher = MERGED_BY_REGEX.matcher(injectionException.getMessage());
+                        var found = matcher.find();
+                        if (found) {
+                            var mergerMixinClass = matcher.group(1);
 
-                        for (var mixin : mixins) {
-                            if (mixin.getClassName().equals(mergerMixinClass)) {
-                                return Optional.of(getModForMixinConfig(mixin.getConfig()));
+                            for (var mixin : mixins) {
+                                if (mixin.getClassName().equals(mergerMixinClass)) {
+                                    return getModForMixinConfig(mixin.getConfig());
+                                }
                             }
                         }
                     }
+                    break;
                 }
-                break;
-            }
 
-            throwable = throwable.getCause();
+                throwable = throwable.getCause();
+            }
+        } catch (NoSuchFieldException | NullPointerException | SecurityException | IllegalAccessException e) {
+            e.printStackTrace();
         }
 
         return Optional.empty();

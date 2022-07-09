@@ -20,9 +20,6 @@
       "dev.isxander.mixinconflicthelper.MixinConflictHelper"
     ]
   },
-  "mixins": [
-    "mixin-conflict-helper.mixins.json"
-  ],
   "depends": {
     "fabricloader": ">=0.14.0",
     "minecraft": "1.19.x",

@@ -1,12 +1,9 @@
 package dev.isxander.mixinconflicthelper;
 
-import net.fabricmc.loader.api.ModContainer;
-import org.spongepowered.asm.mixin.FabricUtil;
+import dev.isxander.mixinconflicthelper.gui.SwingPopups;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfig;
 import org.spongepowered.asm.mixin.extensibility.IMixinErrorHandler;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
-
-import java.lang.reflect.InvocationTargetException;
 
 public class ConflictErrorHandler implements IMixinErrorHandler {
     @Override
@@ -16,18 +13,12 @@ public class ConflictErrorHandler implements IMixinErrorHandler {
 
     @Override
     public ErrorAction onApplyError(String targetClassName, Throwable th, IMixinInfo mixin, ErrorAction action) {
-        var mod = MixinConflictHelper.getModForMixinConfig(mixin.getConfig());
-        System.out.println(mod.getMetadata().getId() + " caused the conflict");
-        System.out.println("issues page here: " + mod.getMetadata().getContact().get("issues").orElse("no issues repo"));
+        var mod1 = MixinConflictHelper.getModForMixinConfig(mixin.getConfig());
+        var mod2 = MixinConflictHelper.walkExceptionCauseForMerger(th);
 
-        ModContainer mergerMod;
-        try {
-            mergerMod = MixinConflictHelper.walkExceptionCauseForMerger(th).orElseThrow();
-        } catch (InvocationTargetException | NoSuchFieldException | IllegalAccessException e) {
-            throw new RuntimeException(e);
+        if (mod1.isPresent() && mod2.isPresent()) {
+            SwingPopups.setupAwt(() -> SwingPopups.conflict(mod1.get(), mod2.get(), th));
         }
-        System.out.println(mergerMod.getMetadata().getId() + " caused the conflict");
-        System.out.println("issues page here: " + mergerMod.getMetadata().getContact().get("issues").orElse("no issues repo"));
 
         return action;
     }
