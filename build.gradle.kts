@@ -16,6 +16,7 @@ version = "1.0.0"
 
 repositories {
     mavenCentral()
+    maven("https://jitpack.io")
 }
 
 val minecraftVersion: String by project
@@ -27,6 +28,9 @@ dependencies {
     mappings("net.fabricmc:yarn:$minecraftVersion+build.+:v2")
 
     modImplementation("net.fabricmc:fabric-loader:$fabricLoaderVersion")
+
+    implementation("com.github.LlamaLad7:MixinExtras:0.0.+")
+    annotationProcessor("com.github.LlamaLad7:MixinExtras:0.0.+")
 }
 
 tasks {
@@ -124,8 +128,8 @@ githubRelease {
 publishing {
     publications {
         create<MavenPublication>("mod") {
-            groupId = group.toString()
-            artifactId = base.archivesName.get()
+            groupId = "dev.isxander"
+            artifactId = "mixin-conflict-helper"
 
             from(components["java"])
         }
