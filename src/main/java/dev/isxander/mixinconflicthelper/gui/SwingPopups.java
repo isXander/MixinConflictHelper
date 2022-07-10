@@ -15,14 +15,17 @@ import java.net.URISyntaxException;
 
 public class SwingPopups {
     public static void conflict(ModContainer mod1, ModContainer mod2, Throwable th) {
+        var mod1Name = mod1.getMetadata().getName();
+        var mod2Name = mod2.getMetadata().getName();
         var message = """
                 There has been a mod conflict to do with mixins.
                 %s tried to modify code that was already modified by %s.
+                This could be either mods fault, %s could have injected poorly.
                 
                 You can go to either mod's issues page to report the issue.
                 
                 You can copy the issue template to your clipboard to help create an issue.
-                """.stripIndent().formatted(mod1.getMetadata().getName(), mod2.getMetadata().getName(), mod1.getMetadata().getName());
+                """.stripIndent().formatted(mod1Name, mod2Name, mod2Name);
 
         var option = JOptionPane.showOptionDialog(
                 null,
@@ -52,7 +55,7 @@ public class SwingPopups {
                    ```
                    %s
                    ```
-                    """.stripIndent().formatted(mod1.getMetadata().getName(), mod1.getMetadata().getContact().get("sources").orElse("#"), mod2.getMetadata().getName(), mod2.getMetadata().getContact().get("sources").orElse("#"), sw.toString());
+                    """.stripIndent().formatted(mod1Name, mod1.getMetadata().getContact().get("sources").orElse("#"), mod2Name, mod2.getMetadata().getContact().get("sources").orElse("#"), sw.toString());
 
                 Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(clipboardContent), null);
 
