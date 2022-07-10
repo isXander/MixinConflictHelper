@@ -1,6 +1,9 @@
 package dev.isxander.mixinconflicthelper;
 
+import dev.isxander.mixinconflicthelper.exception.MixinConflictException;
 import dev.isxander.mixinconflicthelper.gui.SwingPopups;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.loader.api.FabricLoader;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfig;
 import org.spongepowered.asm.mixin.extensibility.IMixinErrorHandler;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
@@ -17,7 +20,10 @@ public class ConflictErrorHandler implements IMixinErrorHandler {
         var mod2 = MixinConflictHelper.walkExceptionCauseForMerger(th);
 
         if (mod1.isPresent() && mod2.isPresent()) {
-            SwingPopups.setupAwt(() -> SwingPopups.conflict(mod1.get(), mod2.get(), th));
+            if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT)
+                SwingPopups.setupAwt(() -> SwingPopups.conflict(mod1.get(), mod2.get(), th));
+            else
+                throw new MixinConflictException(String.format("%s tried to inject into code already modified by %s", mod1.get().getMetadata().getName(), mod2.get().getMetadata().getName()), th);
         }
 
         return action;
