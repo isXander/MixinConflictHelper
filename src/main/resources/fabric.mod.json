@@ -13,6 +13,7 @@
     "sources": "https://github.com/${github}"
   },
   "license": "LGPL-3.0-or-later",
+  "icon": "icon.png",
   "environment": "client",
   "entrypoints": {
     "preLaunch": [
