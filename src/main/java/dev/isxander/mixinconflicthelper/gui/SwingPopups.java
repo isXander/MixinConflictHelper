@@ -65,22 +65,17 @@ public class SwingPopups {
     }
 
     public static void setupAwt(Runnable runnable) {
-        try {
-            var provider = FabricLoaderImpl.INSTANCE.tryGetGameProvider();
-            if (provider == null && LoaderUtil.hasAwtSupport()
-                    || provider != null && provider.hasAwtSupport()) {
-                System.setProperty("java.awt.headless", "false");
-                System.setProperty("apple.awt.application.appearance", "system");
+        var provider = FabricLoaderImpl.INSTANCE.tryGetGameProvider();
+        if (provider == null && LoaderUtil.hasAwtSupport()
+                || provider != null && provider.hasAwtSupport()) {
+            System.setProperty("java.awt.headless", "false");
+            System.setProperty("apple.awt.application.appearance", "system");
 
-                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-                runnable.run();
+            runnable.run();
 
-                System.setProperty("java.awt.headless", "true");
-            } else {
-                throw new IllegalStateException("Couldn't open Frame!");
-            }
-        } catch (UnsupportedLookAndFeelException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-            throw new RuntimeException(e);
+            System.setProperty("java.awt.headless", "true");
+        } else {
+            throw new IllegalStateException("Couldn't open Frame!");
         }
     }
 
