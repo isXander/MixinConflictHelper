@@ -19,8 +19,8 @@ public class SwingPopups {
         var mod2Name = mod2.getMetadata().getName();
         var message = """
                 There has been a mod conflict to do with mixins.
-                %s tried to modify code that was already modified by %s.
-                This could be either mods fault, %s could have injected poorly.
+                %s conflicted with %s.
+                This could be either mods fault, you can delete either mod to resolve the issue.
                 
                 You can go to either mod's issues page to report the issue.
                 
