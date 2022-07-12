@@ -117,16 +117,22 @@ public class SwingPopups {
     }
 
     public static void main(String[] args) throws Exception {
-        System.setProperty("apple.awt.application.appearance", "system");
-        System.setProperty("apple.awt.application.name", "Mixin Conflict Helper");
-
         var is = new DataInputStream(System.in);
         var mod1 = Mod.fromDataInputStream(is);
         var mod2 = Mod.fromDataInputStream(is);
         var stacktrace = is.readUTF();
 
-        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        SwingUtilities.invokeAndWait(() -> conflict(mod1, mod2, stacktrace));
+        SwingUtilities.invokeAndWait(() -> {
+            try {
+                System.setProperty("apple.awt.application.appearance", "system");
+                System.setProperty("apple.awt.application.name", "Mixin Conflict Helper");
+                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+
+                conflict(mod1, mod2, stacktrace);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
 
         System.exit(0);
     }
