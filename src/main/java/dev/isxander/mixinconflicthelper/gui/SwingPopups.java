@@ -125,6 +125,7 @@ public class SwingPopups {
         var mod2 = Mod.fromDataInputStream(is);
         var stacktrace = is.readUTF();
 
+        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         SwingUtilities.invokeAndWait(() -> conflict(mod1, mod2, stacktrace));
 
         System.exit(0);
