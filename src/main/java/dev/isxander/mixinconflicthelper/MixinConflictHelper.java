@@ -33,8 +33,7 @@ public class MixinConflictHelper implements PreLaunchEntrypoint {
             modMixinConfigs = new HashMap<>();
             for (var mod : FabricLoader.getInstance().getAllMods()) {
                 if (mod instanceof ModContainerImpl modImpl) {
-                    var configs = modImpl.getMetadata().getMixinConfigs(EnvType.CLIENT);
-                    configs.addAll(modImpl.getMetadata().getMixinConfigs(EnvType.SERVER));
+                    var configs = modImpl.getMetadata().getMixinConfigs(FabricLoader.getInstance().getEnvironmentType());
                     for (var config : configs) {
                         modMixinConfigs.putIfAbsent(config, mod);
                     }
