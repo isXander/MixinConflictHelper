@@ -12,11 +12,10 @@ plugins {
 }
 
 group = "dev.isxander"
-version = "1.0.1"
+version = "1.0.2"
 
 repositories {
     mavenCentral()
-    maven("https://jitpack.io")
 }
 
 val minecraftVersion: String by project
@@ -28,9 +27,6 @@ dependencies {
     mappings("net.fabricmc:yarn:$minecraftVersion+build.+:v2")
 
     modImplementation("net.fabricmc:fabric-loader:$fabricLoaderVersion")
-
-    implementation("com.github.LlamaLad7:MixinExtras:0.0.+")
-    annotationProcessor("com.github.LlamaLad7:MixinExtras:0.0.+")
 }
 
 tasks {

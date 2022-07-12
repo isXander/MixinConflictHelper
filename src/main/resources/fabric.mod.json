@@ -17,13 +17,12 @@
   "environment": "*",
   "entrypoints": {
     "preLaunch": [
-      "com.llamalad7.mixinextras.MixinExtrasBootstrap::init",
       "dev.isxander.mixinconflicthelper.MixinConflictHelper"
     ]
   },
   "depends": {
     "fabricloader": ">=0.14.0",
-    "minecraft": "1.19.x",
+    "minecraft": "*",
     "java": ">=17"
   }
 }
