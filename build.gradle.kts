@@ -96,6 +96,7 @@ if (hasProperty("curseforge.token") && curseforgeId.isNotEmpty()) {
             releaseType = "release"
             addGameVersion(minecraftVersion)
             addGameVersion("Fabric")
+            addGameVersion("Quilt")
             addGameVersion("Java 17")
 
             changelog = changelogText

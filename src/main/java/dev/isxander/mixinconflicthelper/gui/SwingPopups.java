@@ -35,6 +35,7 @@ public class SwingPopups {
             System.setProperty("java.awt.headless", "true");
         } else {
             // most likely MacOS
+            System.out.println("Forking process to display swing GUI!");
             var javaBinPath = LoaderUtil.normalizePath(Paths.get(System.getProperty("java.home"), "bin"));
             var executables = new String[]{ "javaw.exe", "java.exe", "java" };
             Path javaPath = null;
@@ -115,7 +116,7 @@ public class SwingPopups {
         return sb.toString();
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws Exception {
         System.setProperty("apple.awt.application.appearance", "system");
         System.setProperty("apple.awt.application.name", "Mixin Conflict Helper");
 
@@ -124,7 +125,7 @@ public class SwingPopups {
         var mod2 = Mod.fromDataInputStream(is);
         var stacktrace = is.readUTF();
 
-        conflict(mod1, mod2, stacktrace);
+        SwingUtilities.invokeAndWait(() -> conflict(mod1, mod2, stacktrace));
 
         System.exit(0);
     }
