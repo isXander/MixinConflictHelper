@@ -29,6 +29,8 @@ public class SwingPopups {
         var provider = FabricLoaderImpl.INSTANCE.tryGetGameProvider();
         if (provider == null && LoaderUtil.hasAwtSupport()
                 || provider != null && provider.hasAwtSupport()) {
+            MixinConflictHelper.LOGGER.info("Launching GUI normally.");
+
             System.setProperty("java.awt.headless", "false");
 
             conflict(mod1, mod2, stacktrace);
