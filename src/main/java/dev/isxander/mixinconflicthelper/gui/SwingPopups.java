@@ -12,9 +12,6 @@ import java.awt.datatransfer.StringSelection;
 import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 public class SwingPopups {
     public static void showConflict(ModContainer mod1Container, ModContainer mod2Container, Throwable th) throws Exception {
@@ -27,8 +24,9 @@ public class SwingPopups {
         var stacktrace = sw.toString();
 
         var provider = FabricLoaderImpl.INSTANCE.tryGetGameProvider();
-        if (provider == null && LoaderUtil.hasAwtSupport()
-                || provider != null && provider.hasAwtSupport()) {
+        var hasAwt = provider == null && LoaderUtil.hasAwtSupport()
+                || provider != null && provider.hasAwtSupport();
+        if (hasAwt) {
             MixinConflictHelper.LOGGER.info("Launching GUI normally.");
 
             System.setProperty("java.awt.headless", "false");
@@ -37,35 +35,9 @@ public class SwingPopups {
 
             System.setProperty("java.awt.headless", "true");
         } else {
-            // most likely MacOS
+            // most likely macOS
             MixinConflictHelper.LOGGER.info("Forking process to display swing GUI!");
-            var javaBinPath = LoaderUtil.normalizePath(Paths.get(System.getProperty("java.home"), "bin"));
-            var executables = new String[]{ "javaw.exe", "java.exe", "java" };
-            Path javaPath = null;
-            for (String executable : executables) {
-                Path path = javaBinPath.resolve(executable);
-
-                if (Files.isRegularFile(path)) {
-                    javaPath = path;
-                    break;
-                }
-            }
-
-            if (javaPath == null) throw new RuntimeException("Couldn't find java executable in " + javaBinPath);
-
-            var process = new ProcessBuilder(javaPath.toString(), "-cp", System.getProperty("java.class.path"), SwingPopups.class.getName())
-                    .redirectOutput(ProcessBuilder.Redirect.INHERIT)
-                    .redirectError(ProcessBuilder.Redirect.INHERIT)
-                    .start();
-
-            try (var os = new DataOutputStream(process.getOutputStream())) {
-                mod1.writeTo(os);
-                mod2.writeTo(os);
-                os.writeUTF(stacktrace);
-            }
-
-            var returnVal = process.waitFor();
-            if (returnVal != 0) throw new IOException("subprocess exited with code " + returnVal);
+            SwingForkHelper.forkSwing(mod1, mod2, stacktrace);
         }
     }
 
