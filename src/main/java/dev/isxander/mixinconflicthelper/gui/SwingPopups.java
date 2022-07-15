@@ -1,5 +1,6 @@
 package dev.isxander.mixinconflicthelper.gui;
 
+import dev.isxander.mixinconflicthelper.MixinConflictHelper;
 import dev.isxander.mixinconflicthelper.utils.Mod;
 import net.fabricmc.loader.api.ModContainer;
 import net.fabricmc.loader.impl.FabricLoaderImpl;
@@ -16,7 +17,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class SwingPopups {
-    public static void showConflict(ModContainer mod1Container, ModContainer mod2Container, Throwable th) throws IOException {
+    public static void showConflict(ModContainer mod1Container, ModContainer mod2Container, Throwable th) throws Exception {
         var mod1 = Mod.fromModContainer(mod1Container);
         var mod2 = Mod.fromModContainer(mod2Container);
 
@@ -35,7 +36,7 @@ public class SwingPopups {
             System.setProperty("java.awt.headless", "true");
         } else {
             // most likely MacOS
-            System.out.println("Forking process to display swing GUI!");
+            MixinConflictHelper.LOGGER.info("Forking process to display swing GUI!");
             var javaBinPath = LoaderUtil.normalizePath(Paths.get(System.getProperty("java.home"), "bin"));
             var executables = new String[]{ "javaw.exe", "java.exe", "java" };
             Path javaPath = null;
@@ -60,6 +61,9 @@ public class SwingPopups {
                 mod2.writeTo(os);
                 os.writeUTF(stacktrace);
             }
+
+            var returnVal = process.waitFor();
+            if (returnVal != 0) throw new IOException("subprocess exited with code " + returnVal);
         }
     }
 
@@ -124,6 +128,10 @@ public class SwingPopups {
 
         SwingUtilities.invokeAndWait(() -> {
             try {
+                if (GraphicsEnvironment.isHeadless()) {
+                    throw new HeadlessException();
+                }
+
                 System.setProperty("apple.awt.application.appearance", "system");
                 System.setProperty("apple.awt.application.name", "Mixin Conflict Helper");
                 UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());

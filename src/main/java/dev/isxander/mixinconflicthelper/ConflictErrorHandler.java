@@ -8,8 +8,6 @@ import org.spongepowered.asm.mixin.extensibility.IMixinConfig;
 import org.spongepowered.asm.mixin.extensibility.IMixinErrorHandler;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 
-import java.io.IOException;
-
 public class ConflictErrorHandler implements IMixinErrorHandler {
     @Override
     public ErrorAction onPrepareError(IMixinConfig config, Throwable th, IMixinInfo mixin, ErrorAction action) {
@@ -25,7 +23,7 @@ public class ConflictErrorHandler implements IMixinErrorHandler {
             if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
                 try {
                     SwingPopups.showConflict(mod1.get(), mod2.get(), th);
-                } catch (IOException e) {
+                } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
             }

@@ -3,6 +3,8 @@ package dev.isxander.mixinconflicthelper;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.fabricmc.loader.api.entrypoint.PreLaunchEntrypoint;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.spongepowered.asm.mixin.FabricUtil;
 import org.spongepowered.asm.mixin.Mixins;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfig;
@@ -15,6 +17,8 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 public class MixinConflictHelper implements PreLaunchEntrypoint {
+    public static final Logger LOGGER = LoggerFactory.getLogger("Mixin Conflict Helper");
+
     private static final Pattern MERGED_BY_REGEX = Pattern.compile("merged by ((?:[a-zA-Z_$][a-zA-Z\\d_$]*\\.)*[a-zA-Z_$][a-zA-Z\\d_$]*)");
 
     @Override
