@@ -3,8 +3,6 @@ package dev.isxander.mixinconflicthelper.gui;
 import dev.isxander.mixinconflicthelper.MixinConflictHelper;
 import dev.isxander.mixinconflicthelper.utils.Mod;
 import net.fabricmc.loader.api.ModContainer;
-import net.fabricmc.loader.impl.FabricLoaderImpl;
-import net.fabricmc.loader.impl.util.LoaderUtil;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,6 +10,7 @@ import java.awt.datatransfer.StringSelection;
 import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Locale;
 
 public class SwingPopups {
     public static void showConflict(ModContainer mod1Container, ModContainer mod2Container, Throwable th) throws Exception {
@@ -23,10 +22,7 @@ public class SwingPopups {
         th.printStackTrace(pw);
         var stacktrace = sw.toString();
 
-        var provider = FabricLoaderImpl.INSTANCE.tryGetGameProvider();
-        var hasAwt = provider == null && LoaderUtil.hasAwtSupport()
-                || provider != null && provider.hasAwtSupport();
-        if (hasAwt) {
+        if (!System.getProperty("os.name").toLowerCase(Locale.ENGLISH).contains("mac")) {
             MixinConflictHelper.LOGGER.info("Launching GUI normally.");
 
             System.setProperty("java.awt.headless", "false");
@@ -35,7 +31,7 @@ public class SwingPopups {
 
             System.setProperty("java.awt.headless", "true");
         } else {
-            // most likely macOS
+            // macOS hates swing
             MixinConflictHelper.LOGGER.info("Forking process to display swing GUI!");
             SwingForkHelper.forkSwing(mod1, mod2, stacktrace);
         }
