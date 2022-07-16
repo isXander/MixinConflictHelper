@@ -90,31 +90,6 @@ public class SwingPopups {
         return sb.toString();
     }
 
-    public static void main(String[] args) throws Exception {
-        var is = new DataInputStream(System.in);
-        var mod1 = Mod.fromDataInputStream(is);
-        var mod2 = Mod.fromDataInputStream(is);
-        var stacktrace = is.readUTF();
-
-        SwingUtilities.invokeAndWait(() -> {
-            try {
-                if (GraphicsEnvironment.isHeadless()) {
-                    throw new HeadlessException();
-                }
-
-                System.setProperty("apple.awt.application.appearance", "system");
-                System.setProperty("apple.awt.application.name", "Mixin Conflict Helper");
-                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-
-                conflict(mod1, mod2, stacktrace);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        });
-
-        System.exit(0);
-    }
-
     private static void openUrl(String url) {
         try {
             if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
