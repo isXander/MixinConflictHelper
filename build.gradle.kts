@@ -29,6 +29,10 @@ dependencies {
     modImplementation("net.fabricmc:fabric-loader:$fabricLoaderVersion")
 }
 
+java {
+    withSourcesJar()
+}
+
 tasks {
     processResources {
         val modId: String by project
@@ -133,13 +137,15 @@ publishing {
     }
 
     repositories {
-        if (hasProperty("xander-repo.username") && hasProperty("xander-repo.token")) {
+        if (hasProperty("xander-repo.username") && hasProperty("xander-repo.password")) {
             maven(url = "https://maven.isxander.dev/releases") {
                 credentials {
                     username = property("xander-repo.username")?.toString()
-                    password = property("xander-repo.token")?.toString()
+                    password = property("xander-repo.password")?.toString()
                 }
             }
+        } else {
+            println("Xander Maven credentials not satisfied.")
         }
     }
 }
