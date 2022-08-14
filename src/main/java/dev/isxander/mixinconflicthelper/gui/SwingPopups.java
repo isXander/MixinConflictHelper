@@ -37,7 +37,9 @@ public class SwingPopups {
         }
     }
 
-    public static void conflict(Mod mod1, Mod mod2, String stacktrace) {
+    public static void conflict(Mod mod1, Mod mod2, String stacktrace) throws UnsupportedLookAndFeelException, ClassNotFoundException, InstantiationException, IllegalAccessException {
+        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+
         var message = createPopupMessage(mod1, mod2);
 
         var option = JOptionPane.showOptionDialog(

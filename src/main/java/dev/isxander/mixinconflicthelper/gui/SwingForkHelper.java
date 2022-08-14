@@ -12,7 +12,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 /**
- * This class cannot depend on ANY external dependencies,
+ * Any calls from this class cannot reference ANY external dependencies,
  * the only valid classes are the ones found in this mod.
  */
 public class SwingForkHelper {
@@ -67,7 +67,6 @@ public class SwingForkHelper {
 
                 System.setProperty("apple.awt.application.appearance", "system");
                 System.setProperty("apple.awt.application.name", "Mixin Conflict Helper");
-                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 
                 SwingPopups.conflict(mod1, mod2, stacktrace);
             } catch (Exception e) {
