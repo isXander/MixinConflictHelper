@@ -16,7 +16,7 @@ import java.nio.file.Paths;
  * the only valid classes are the ones found in this mod.
  */
 public class SwingForkHelper {
-    public static void forkSwing(Mod mod1, Mod mod2, String stacktrace) throws Exception {
+    public static void forkSwing(Mod mod1, Mod mod2, String issueTemplate) throws Exception {
         var javaBinPath = Paths.get(System.getProperty("java.home"), "bin");
         if (Files.exists(javaBinPath)) {
             javaBinPath = javaBinPath.toRealPath();
@@ -46,7 +46,7 @@ public class SwingForkHelper {
         try (var os = new DataOutputStream(process.getOutputStream())) {
             mod1.writeTo(os);
             mod2.writeTo(os);
-            os.writeUTF(stacktrace);
+            os.writeUTF(issueTemplate);
         }
 
         var returnVal = process.waitFor();
@@ -57,7 +57,7 @@ public class SwingForkHelper {
         var is = new DataInputStream(System.in);
         var mod1 = Mod.fromDataInputStream(is);
         var mod2 = Mod.fromDataInputStream(is);
-        var stacktrace = is.readUTF();
+        var issueTemplate = is.readUTF();
 
         SwingUtilities.invokeAndWait(() -> {
             try {
@@ -68,7 +68,7 @@ public class SwingForkHelper {
                 System.setProperty("apple.awt.application.appearance", "system");
                 System.setProperty("apple.awt.application.name", "Mixin Conflict Helper");
 
-                SwingPopups.conflict(mod1, mod2, stacktrace);
+                SwingPopups.conflict(mod1, mod2, issueTemplate);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
